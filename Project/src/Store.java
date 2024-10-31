@@ -1,6 +1,6 @@
 public class Store {
-    private Userinput[] users;
-    private int totalUsers = 0;
+    public Userinput[] users;
+    public int totalUsers = 0;
 
     public Store(int newUser) {
         this.users = new Userinput[newUser];
@@ -26,7 +26,7 @@ public class Store {
 
     public String listUsers() {
         if (isEmpty()) {
-            return "No users saved";
+            return "No user saved";
         } else {
             String listOfUsers = "";
             for (int i = 0; i < totalUsers; i++)
@@ -34,6 +34,6 @@ public class Store {
             return listOfUsers;
         }
 
-    }//End of else
+    }//End of listusers
 
 }
