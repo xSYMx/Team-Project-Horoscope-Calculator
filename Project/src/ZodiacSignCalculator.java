@@ -1,30 +1,32 @@
 import java.util.Scanner;
 
 public class ZodiacSignCalculator {
-
     private Scanner input = new Scanner(System.in);
     private Store store;
 
     public static void main(String[] args) {
-        System.out.println("ZodiacSign Calculator V1.0");
+        System.out.println("ZodiacSign Calculator V2.0");
         ZodiacSignCalculator calculator = new ZodiacSignCalculator();
         calculator.run();
     }
 
-    public ZodiacSignCalculator(){
-        this.store = new Store(1);
+    public ZodiacSignCalculator() {
+        this.store = new Store();
     }
 
-    private void printUsers(){
+    private void printUsers() {
         System.out.println(store.listUsers());
     }
 
     private void printCurrentUsersZodiacSigns() {
-        System.out.println("Current Users Zodiac Signs:");
-        for (int i = 0; i < store.totalUsers; i++) {
-            Userinput user = store.users[i];
-            if (user.isInCurrentUser()) {
-                System.out.println(user.getName() + "'s Zodiac Sign: " + getZodiacSign(user.getBirthMonth(), user.getBirthDate()));
+        if (store.isEmpty()) {
+            System.out.println("No users have been added yet.");
+        } else {
+            System.out.println("Current Users Zodiac Signs:");
+            for (Userinput user : store.users) {
+                if (user.isInCurrentUser()) {
+                    System.out.println(user.getName() + "'s Zodiac Sign: " + getZodiacSign(user.getBirthMonth(), user.getBirthDate()));
+                }
             }
         }
     }
@@ -43,49 +45,42 @@ public class ZodiacSignCalculator {
 
     public void run() {
 
-        displayMenu();
-
         while (true) {
+            System.out.print("Press Enter to continue...");
+            input.nextLine(); // 读取用户按下的 Enter 键
+            displayMenu();
+
             String choice = input.nextLine().trim();
 
             switch (choice) {
                 case "1":
                     addUser();
-                    printCurrentUsersZodiacSigns();
-                    displayMenu();
                     break;
                 case "2":
                     printUsers();
-                    displayMenu();
                     break;
                 case "3":
                     findUser();
-                    displayMenu();
                     break;
                 case "4":
                     updateUser();
-                    displayMenu();
                     break;
                 case "5":
                     deleteUser();
-                    displayMenu();
                     break;
                 case "6":
                     printCurrentUsersZodiacSigns();
-                    displayMenu();
                     break;
                 case "7":
                     System.out.println("Exiting program.");
+                    input.close(); // 关闭 scanner
                     return;
                 default:
                     System.out.println("Invalid choice. Please enter a number between 1 and 7.");
-                    displayMenu(); // Display menu again for the invalid choice
                     break;
             }
         }
     }
-
-
 
     private void addUser() {
         System.out.println("Enter user information:");
@@ -98,31 +93,16 @@ public class ZodiacSignCalculator {
         System.out.println("Enter birth date (DD):");
         int birthDate = Integer.parseInt(input.nextLine());
 
-        // Set all users' inCurrentUser to false
-        for (int i = 0; i < store.totalUsers; i++) {
-            store.users[i] = new Userinput(store.users[i].getName(), store.users[i].getBirthMonth(), store.users[i].getBirthDate(), false);
-        }
-
-        // Add new user with inCurrentUser set to true
         Userinput newUser = new Userinput(name, birthMonth, birthDate, true);
-        String zodiacSign = getZodiacSign(birthMonth, birthDate);
-
-
-        if (!store.add(newUser)) {
-            System.out.println("Store is full. Cannot add more users.");
-        } else {
-            System.out.println("User added successfully.");
-            System.out.println("Your zodiac sign is: " + zodiacSign);
-        }
-
+        store.add(newUser);
+        System.out.println("User added successfully.");
     }
 
     private void findUser() {
         System.out.println("Enter the name of the user to find:");
         String name = input.nextLine();
 
-        for (int i = 0; i < store.totalUsers; i++) {
-            Userinput user = store.users[i];
+        for (Userinput user : store.users) {
             if (user.getName().equals(name)) {
                 System.out.println("User found: " + user);
                 return;
@@ -135,14 +115,14 @@ public class ZodiacSignCalculator {
         System.out.println("Enter the name of the user to update:");
         String name = input.nextLine();
 
-        for (int i = 0; i < store.totalUsers; i++) {
-            Userinput user = store.users[i];
+        for (int i = 0; i < store.users.size(); i++) {
+            Userinput user = store.getUser(i);
             if (user.getName().equals(name)) {
                 System.out.println("Enter new birth month (MM):");
                 int birthMonth = Integer.parseInt(input.nextLine());
                 System.out.println("Enter new birth date (DD):");
                 int birthDate = Integer.parseInt(input.nextLine());
-                store.users[i] = new Userinput(user.getName(), birthMonth, birthDate, user.isInCurrentUser());
+                store.setUser(i, new Userinput(user.getName(), birthMonth, birthDate, user.isInCurrentUser()));
                 System.out.println("User updated successfully.");
                 return;
             }
@@ -154,13 +134,10 @@ public class ZodiacSignCalculator {
         System.out.println("Enter the name of the user to delete:");
         String name = input.nextLine();
 
-        for (int i = 0; i < store.totalUsers; i++) {
-            Userinput user = store.users[i];
+        for (int i = 0; i < store.users.size(); i++) {
+            Userinput user = store.getUser(i);
             if (user.getName().equals(name)) {
-                for (int j = i; j < store.totalUsers - 1; j++) {
-                    store.users[j] = store.users[j + 1];
-                }
-                store.totalUsers--;
+                store.removeUser(i);
                 System.out.println("User deleted successfully.");
                 return;
             }
