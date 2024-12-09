@@ -73,7 +73,7 @@ public class ZodiacSignCalculator {
                     break;
                 case "7":
                     System.out.println("Exiting program.");
-                    input.close(); // 关闭 scanner
+                    input.close();
                     return;
                 default:
                     System.out.println("Invalid choice. Please enter a number between 1 and 7.");
@@ -92,6 +92,10 @@ public class ZodiacSignCalculator {
 
         System.out.println("Enter birth date (DD):");
         int birthDate = Integer.parseInt(input.nextLine());
+
+        for (Userinput user : store.users) {
+            user.setInCurrentUser(false);
+        }
 
         Userinput newUser = new Userinput(name, birthMonth, birthDate, true);
         store.add(newUser);
@@ -144,6 +148,8 @@ public class ZodiacSignCalculator {
         }
         System.out.println("User not found.");
     }
+
+    //Calculate Part
 
     public static String getZodiacSign(int birthMonth, int birthDate) {
         String zodiacSign;
